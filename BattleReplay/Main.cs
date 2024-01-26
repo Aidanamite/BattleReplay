@@ -11,10 +11,12 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using ConfigTweaks;
 
 namespace BattleReplay
 {
-    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.0")]
+    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.1")]
+    [BepInDependency("com.aidanamite.ConfigTweaks")]
     public class Main : BaseUnityPlugin
     {
         public const string CustomUnitName = "\u0000CUSTOM\u0000UNIT\u0000";
@@ -22,6 +24,7 @@ namespace BattleReplay
         public static GameRecording Replaying;
         public static GameRecording Recording;
         public static Main instance;
+        [ConfigField]
         public static ReplaySaving ReplaySaving;
         static DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameRecording),new DataContractJsonSerializerSettings() { DataContractSurrogate = new IgnoreComponents() });
         static string LastLoadedReplay;
