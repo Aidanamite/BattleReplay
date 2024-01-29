@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using SquadTactics;
+using System;
 
 namespace BattleReplay
 {
@@ -52,9 +53,10 @@ namespace BattleReplay
                     coroutine = instance.StartCoroutine(e);
                 return true;
             }
-            finally
+            catch (Exception e)
             {
                 GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "An error occured while playing the replay", Main.instance.gameObject, "ReturnToMainMenu");
+                throw e;
             }
         }
     }
