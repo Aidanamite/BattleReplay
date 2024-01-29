@@ -15,10 +15,11 @@ using ConfigTweaks;
 
 namespace BattleReplay
 {
-    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.1")]
+    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.2")]
     [BepInDependency("com.aidanamite.ConfigTweaks")]
     public class Main : BaseUnityPlugin
     {
+        public const string LogPrefix = "[Battle Replay]: ";
         public const string CustomUnitName = "\u0000CUSTOM\u0000UNIT\u0000";
         public static string ReplayFolder = Environment.CurrentDirectory + "\\Dragon Tactics Replays";
         public static GameRecording Replaying;
@@ -92,6 +93,11 @@ namespace BattleReplay
             SquadTactics.LevelManager.pInstance.LoadLevel();
         }
         public static void RestartLastReplay() => LoadReplay(LastLoadedReplay);
-        public void ReturnToMainMenu() => GameManager.pInstance.LoadMainMenu();
+        public void ReturnToMainMenu()
+        {
+            Replaying = null;
+            Recording = null;
+            GameManager.pInstance.LoadMainMenu();
+        }
     }
 }

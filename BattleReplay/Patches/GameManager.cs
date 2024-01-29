@@ -81,6 +81,7 @@ namespace BattleReplay
         {
             if (Main.Replaying != null)
             {
+                ExtendedGameManager.extra.GetOrCreateValue(__instance).CurrentTurn = team;
                 __instance.SetGameState(GameManager.GameState.PLAYER);
                 if (team == Character.Team.PLAYER)
                 {

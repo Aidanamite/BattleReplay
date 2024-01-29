@@ -69,8 +69,8 @@ namespace BattleReplay
         public EventType Type;
         public IEnumerator Execute(GameManager instance)
         {
-            Debug.Log("EventExecute: " + Type);
-            if (Type == EventType.EndOfTurn && instance._GameState.ToString() != Team.ToString())
+            Debug.Log(Main.LogPrefix + "EventExecute: " + Type);
+            if (Type == EventType.EndOfTurn && ExtendedGameManager.extra.GetOrCreateValue(instance).CurrentTurn == Team)
             {
                 GameManagerPatchMethods.WaitingForTurnStart = true;
                 if (Team == SquadTactics.Character.Team.PLAYER)
@@ -85,17 +85,17 @@ namespace BattleReplay
             {
                 var c = GetCharacter(instance, Character);
                 if (c == null)
-                    Debug.LogError($"Character {Character} not found. Event Type: Movement");
+                    Debug.LogError($"{Main.LogPrefix}Character {Character} not found. Event Type: Movement");
                 return Watch(c, instance, c.DoMovement(instance._Grid.GetNodeByPosition(TargetX, TargetY)));
             }
             else if (Type == EventType.Ability)
             {
                 var c = GetCharacter(instance, Character);
                 if (c == null)
-                    Debug.LogError($"Character {Character} not found. Event Type: Ability");
+                    Debug.LogError($"{Main.LogPrefix}Character {Character} not found. Event Type: Ability");
                 var t = GetCharacter(instance, Target);
                 if (t == null)
-                    Debug.LogError($"Target {Character} not found. Event Type: Ability");
+                    Debug.LogError($"{Main.LogPrefix}Target {Character} not found. Event Type: Ability");
                 c.SetAbility(c.pAbilities[Ability]);
                 Patch_StartCharacterAbility.NextReplay = Randoms;
                 return Watch(c, instance, c.UseAbility(t));

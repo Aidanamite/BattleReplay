@@ -13,9 +13,10 @@ namespace BattleReplay
         public Randoms WithheldRec;
         public Randoms WithheldRep;
         public int Withhold = 0;
+        public Character.Team CurrentTurn;
         public static IEnumerator DoTurns(GameManager instance)
         {
-            Debug.Log("DoTurns");
+            Debug.Log(Main.LogPrefix + "DoTurns");
             var extra = ExtendedGameManager.extra.GetOrCreateValue(instance);
             while (true)
             {
@@ -32,22 +33,29 @@ namespace BattleReplay
                 yield return coroutine;
                 yield return new WaitForSeconds(0.1f);
             }
-            Debug.Log("DoTurns exit");
+            Debug.Log(Main.LogPrefix + "DoTurns exit");
             yield break;
         }
         static bool DoNextAction(GameManager instance, out Coroutine coroutine)
         {
-            coroutine = null;
-            Debug.Log($"DoNextAction start: ({Main.Replaying.ActionPos}/{Main.Replaying.RecordedActions.Count})");
-            if (Main.Replaying.ActionPos >= Main.Replaying.RecordedActions.Count)
-                return false;
-            var i = Main.Replaying.RecordedActions[Main.Replaying.ActionPos++];
-            if (i == null)
+            try
+            {
+                coroutine = null;
+                Debug.Log($"{Main.LogPrefix}DoNextAction start: ({Main.Replaying.ActionPos}/{Main.Replaying.RecordedActions.Count})");
+                if (Main.Replaying.ActionPos >= Main.Replaying.RecordedActions.Count)
+                    return false;
+                var i = Main.Replaying.RecordedActions[Main.Replaying.ActionPos++];
+                if (i == null)
+                    return true;
+                var e = i.Execute(instance);
+                if (e != null)
+                    coroutine = instance.StartCoroutine(e);
                 return true;
-            var e = i.Execute(instance);
-            if (e != null)
-                coroutine = instance.StartCoroutine(e);
-            return true;
+            }
+            finally
+            {
+                GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "An error occured while playing the replay", Main.instance.gameObject, "ReturnToMainMenu");
+            }
         }
     }
 }

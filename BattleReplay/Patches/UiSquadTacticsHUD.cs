@@ -44,7 +44,7 @@ namespace BattleReplay
             {
                 var extra = ExtendedGameManager.extra.GetOrCreateValue(GameManager.pInstance);
                 extra.AutoPlay = !extra.AutoPlay;
-                Debug.Log("AutoPlay = " + extra.AutoPlay);
+                Debug.Log(Main.LogPrefix + "AutoPlay = " + extra.AutoPlay);
             }
         }
 
