@@ -70,14 +70,14 @@ namespace BattleReplay
         public IEnumerator Execute(GameManager instance)
         {
             Debug.Log(Main.LogPrefix + "EventExecute: " + Type);
-            if (Type == EventType.EndOfTurn && ExtendedGameManager.extra.GetOrCreateValue(instance).CurrentTurn == Team)
+            if (Type == EventType.EndOfTurn)
             {
-                GameManagerPatchMethods.WaitingForTurnStart = true;
-                if (Team == SquadTactics.Character.Team.PLAYER)
-                    instance.EndPlayerTurn();
-                else
+                if (ExtendedGameManager.extra.GetOrCreateValue(instance).CurrentTurn == Team)
                 {
-                    instance.EndTurn(Team);
+                    if (Team == SquadTactics.Character.Team.PLAYER)
+                        instance.EndPlayerTurn();
+                    else
+                        instance.EndTurn(Team);
                 }
                 return WaitForEndOfTurn();
             }
@@ -112,7 +112,7 @@ namespace BattleReplay
             CameraMovement.pInstance.SetFollowTarget(null);
             yield break;
         }
-        static IEnumerator WaitForEndOfTurn()
+        public static IEnumerator WaitForEndOfTurn()
         {
             while (GameManagerPatchMethods.WaitingForTurnStart)
                 yield return null;

@@ -33,6 +33,8 @@ namespace BattleReplay
                     break;
                 yield return coroutine;
                 yield return new WaitForSeconds(0.1f);
+                if (GameManagerPatchMethods.WaitingForTurnStart)
+                    yield return instance.StartCoroutine(RecordedEvent.WaitForEndOfTurn());
             }
             Debug.Log(Main.LogPrefix + "DoTurns exit");
             yield break;
