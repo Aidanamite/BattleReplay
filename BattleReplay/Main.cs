@@ -15,7 +15,7 @@ using ConfigTweaks;
 
 namespace BattleReplay
 {
-    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.4")]
+    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.5")]
     [BepInDependency("com.aidanamite.ConfigTweaks")]
     public class Main : BaseUnityPlugin
     {

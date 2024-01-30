@@ -42,6 +42,7 @@
     <Compile Include="GameRecording.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="Patches\AbilityAoE.cs" />
     <Compile Include="Patches\GameManager.cs" />
     <Compile Include="Patches\RsResourceManager.cs" />
     <Compile Include="Patches\UnityRandom.cs" />

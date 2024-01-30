@@ -4,12 +4,12 @@ using SquadTactics;
 namespace BattleReplay
 {
     [HarmonyPatch(typeof(Ability))]
-    static class Patch_StartCharacterAbility
+    static class Patch_Ability
     {
         public static Randoms NextReplay;
         [HarmonyPatch("Activate")]
         [HarmonyPrefix]
-        static void Activate(Ability __instance, Character owner, Character target)
+        public static void Activate(Ability __instance, Character owner, Character target)
         {
             if (__instance.pCurrentCooldown <= 0)
             {
@@ -27,14 +27,14 @@ namespace BattleReplay
         public static Randoms ActiveReplay;
         [HarmonyPatch("Activate", MethodType.Enumerator)]
         [HarmonyPrefix]
-        static void ActivateEnumerator_Prefix()
+        public static void ActivateEnumerator_Prefix()
         {
             Patch_Randomizer.Recording = ActiveRecording;
             Patch_Randomizer.Replaying = ActiveReplay;
         }
         [HarmonyPatch("Activate", MethodType.Enumerator)]
         [HarmonyPostfix]
-        static void ActivateEnumerator_Postfix(bool __result)
+        public static void ActivateEnumerator_Postfix(bool __result)
         {
             if (!__result)
             {
@@ -44,7 +44,7 @@ namespace BattleReplay
         }
         [HarmonyPatch("Activate", MethodType.Enumerator)]
         [HarmonyFinalizer]
-        static void ActivateEnumerator_Finalizer()
+        public static void ActivateEnumerator_Finalizer()
         {
             Patch_Randomizer.Recording = null;
             Patch_Randomizer.Replaying = null;

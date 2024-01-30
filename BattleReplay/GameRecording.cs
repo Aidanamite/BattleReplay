@@ -59,12 +59,24 @@ namespace BattleReplay
     [Serializable]
     public class RecordedEvent
     {
+        [OptionalField]
+        [DataMember(EmitDefaultValue = false)]
         public Randoms Randoms;
         public int Character;
+        [OptionalField]
+        [DataMember(EmitDefaultValue = false)]
         public int TargetX;
+        [OptionalField]
+        [DataMember(EmitDefaultValue = false)]
         public int TargetY;
+        [OptionalField]
+        [DataMember(EmitDefaultValue = false)]
         public int Target;
+        [OptionalField]
+        [DataMember(EmitDefaultValue = false)]
         public int Ability;
+        [OptionalField]
+        [DataMember(EmitDefaultValue = false)]
         public Character.Team Team;
         public EventType Type;
         public IEnumerator Execute(GameManager instance)
@@ -72,6 +84,7 @@ namespace BattleReplay
             Debug.Log(Main.LogPrefix + "EventExecute: " + Type);
             if (Type == EventType.EndOfTurn)
             {
+                Debug.Log(Main.LogPrefix + "EndOfTurn for team " + Team);
                 if (ExtendedGameManager.extra.GetOrCreateValue(instance).CurrentTurn == Team)
                 {
                     if (Team == SquadTactics.Character.Team.PLAYER)
@@ -86,6 +99,8 @@ namespace BattleReplay
                 var c = GetCharacter(instance, Character);
                 if (c == null)
                     Debug.LogError($"{Main.LogPrefix}Character {Character} not found. Event Type: Movement");
+                else
+                    Debug.Log($"{Main.LogPrefix}Move character {Character} ({c.pCharacterData._DisplayNameText.GetLocalizedString()}) to tile {TargetX}, {TargetY}");
                 return Watch(c, instance, c.DoMovement(instance._Grid.GetNodeByPosition(TargetX, TargetY)));
             }
             else if (Type == EventType.Ability)
@@ -96,8 +111,10 @@ namespace BattleReplay
                 var t = GetCharacter(instance, Target);
                 if (t == null)
                     Debug.LogError($"{Main.LogPrefix}Target {Character} not found. Event Type: Ability");
+                if (t && c)
+                    Debug.Log($"{Main.LogPrefix}Character {Character} ({c.pCharacterData._DisplayNameText.GetLocalizedString()}) use ability {Ability} ({c.pAbilities[Ability]._Name.GetLocalizedString()}) on character {Target} ({t.pCharacterData._DisplayNameText.GetLocalizedString()})");
                 c.SetAbility(c.pAbilities[Ability]);
-                Patch_StartCharacterAbility.NextReplay = Randoms;
+                Patch_Ability.NextReplay = Randoms;
                 return Watch(c, instance, c.UseAbility(t));
             }
             return DoNothing();
@@ -114,8 +131,10 @@ namespace BattleReplay
         }
         public static IEnumerator WaitForEndOfTurn()
         {
+            Debug.Log(Main.LogPrefix + "Waiting for next turn start");
             while (GameManagerPatchMethods.WaitingForTurnStart)
                 yield return null;
+            Debug.Log(Main.LogPrefix + "Next turn started");
             yield break;
         }
         static IEnumerator DoNothing()
