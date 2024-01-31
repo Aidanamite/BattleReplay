@@ -3,7 +3,7 @@ using SquadTactics;
 
 namespace BattleReplay
 {
-    [HarmonyPatch(typeof(Patch_AbilityAoE))]
+    [HarmonyPatch(typeof(AbilityAoE))]
     static class Patch_AbilityAoE
     {
         [HarmonyPatch("Activate")]
