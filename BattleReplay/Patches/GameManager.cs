@@ -130,6 +130,14 @@ namespace BattleReplay
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GameManagerPatchMethods), nameof(GameManagerPatchMethods.EditStartedMove))));
             return code;
         }
+
+        [HarmonyPatch("LoadMainMenu")]
+        [HarmonyPrefix]
+        static void LoadMainMenu()
+        {
+            Main.Recording = null;
+            Main.Replaying = null;
+        }
     }
 
     static class GameManagerPatchMethods

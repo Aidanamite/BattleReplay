@@ -15,7 +15,7 @@ using ConfigTweaks;
 
 namespace BattleReplay
 {
-    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.6")]
+    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.7")]
     [BepInDependency("com.aidanamite.ConfigTweaks")]
     public class Main : BaseUnityPlugin
     {
@@ -33,7 +33,7 @@ namespace BattleReplay
         {
             Type IDataContractSurrogate.GetDataContractType(Type type) => typeof(Object).IsAssignableFrom(type) ? typeof(void) : type == typeof(void) ? typeof(Object) : type;
             object IDataContractSurrogate.GetDeserializedObject(object obj, Type targetType) => typeof(Object).IsAssignableFrom(targetType) ? null : obj;
-            object IDataContractSurrogate.GetObjectToSerialize(object obj, Type targetType) => obj is Object ? null : obj;
+            object IDataContractSurrogate.GetObjectToSerialize(object obj, Type targetType) => obj is Object ? null : obj is DateTime d ? d.ToUniversalTime() : obj;
             object IDataContractSurrogate.GetCustomDataToExport(MemberInfo memberInfo, Type dataContractType) => null;
             object IDataContractSurrogate.GetCustomDataToExport(Type clrType, Type dataContractType) => null;
             void IDataContractSurrogate.GetKnownCustomDataTypes(System.Collections.ObjectModel.Collection<Type> customDataTypes) { }
@@ -93,11 +93,6 @@ namespace BattleReplay
             SquadTactics.LevelManager.pInstance.LoadLevel();
         }
         public static void RestartLastReplay() => LoadReplay(LastLoadedReplay);
-        public void ReturnToMainMenu()
-        {
-            Replaying = null;
-            Recording = null;
-            GameManager.pInstance.LoadMainMenu();
-        }
+        public void ReturnToMainMenu() => GameManager.pInstance.LoadMainMenu();
     }
 }

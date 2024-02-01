@@ -12,8 +12,7 @@ namespace BattleReplay
             {
                 KAUI.RemoveExclusive(___mObjectivesEndDB);
                 ___mObjectivesEndDB.SetVisibility(false);
-                Main.Replaying = null;
-                Traverse.Create(__instance).Method("ShowMainMenu").GetValue();
+                Main.instance.ReturnToMainMenu();
                 return false;
             }
             if (Main.Recording != null)
