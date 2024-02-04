@@ -137,6 +137,10 @@ namespace BattleReplay
         {
             Main.Recording = null;
             Main.Replaying = null;
+            Patch_Ability.ActiveRecording = null;
+            Patch_Ability.ActiveReplay = null;
+            Patch_Randomizer.Recording = null;
+            Patch_Randomizer.Replaying = null;
         }
     }
 

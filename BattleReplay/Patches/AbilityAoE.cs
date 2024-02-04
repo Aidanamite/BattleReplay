@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SquadTactics;
+using System;
 
 namespace BattleReplay
 {
@@ -20,6 +21,6 @@ namespace BattleReplay
 
         [HarmonyPatch("Activate", MethodType.Enumerator)]
         [HarmonyFinalizer]
-        public static void ActivateEnumerator_Finalizer() => Patch_Ability.ActivateEnumerator_Finalizer();
+        public static void ActivateEnumerator_Finalizer(Exception __exception) => Patch_Ability.ActivateEnumerator_Finalizer(__exception);
     }
 }

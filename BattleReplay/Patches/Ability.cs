@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SquadTactics;
+using System;
 
 namespace BattleReplay
 {
@@ -44,10 +45,15 @@ namespace BattleReplay
         }
         [HarmonyPatch("Activate", MethodType.Enumerator)]
         [HarmonyFinalizer]
-        public static void ActivateEnumerator_Finalizer()
+        public static void ActivateEnumerator_Finalizer(Exception __exception)
         {
             Patch_Randomizer.Recording = null;
             Patch_Randomizer.Replaying = null;
+            if (__exception != null)
+            {
+                ActiveRecording = null;
+                ActiveReplay = null;
+            }
         }
     }
 }

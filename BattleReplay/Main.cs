@@ -15,7 +15,7 @@ using ConfigTweaks;
 
 namespace BattleReplay
 {
-    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.7")]
+    [BepInPlugin("com.aidanamite.BattleReplay", "Battle Replay", "1.0.8")]
     [BepInDependency("com.aidanamite.ConfigTweaks")]
     public class Main : BaseUnityPlugin
     {
@@ -27,7 +27,18 @@ namespace BattleReplay
         public static Main instance;
         [ConfigField]
         public static ReplaySaving ReplaySaving;
-        static DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameRecording),new DataContractJsonSerializerSettings() { DataContractSurrogate = new IgnoreComponents() });
+        static Dictionary<string,DataContractJsonSerializer> JsonSerializers = new Dictionary<string, DataContractJsonSerializer>()
+        {
+            {
+                "v0",
+                new DataContractJsonSerializer(typeof(GameRecording), new DataContractJsonSerializerSettings() { DataContractSurrogate = new IgnoreComponents() })
+            },
+            {
+                "v1",
+                new DataContractJsonSerializer(typeof(GameRecording), new DataContractJsonSerializerSettings() { DataContractSurrogate = new IgnoreComponents(), DateTimeFormat = new DateTimeFormat("o") })
+            }
+        };
+        static string CurrentSerializer = "v1";
         static string LastLoadedReplay;
         class IgnoreComponents : IDataContractSurrogate
         {
@@ -56,13 +67,23 @@ namespace BattleReplay
                 return;
             if (!Directory.Exists(ReplayFolder))
                 Directory.CreateDirectory(ReplayFolder);
+            var f = $"{ReplayFolder}\\Replay ({DateTime.Now:HH-mm dd-MM-yyyy}).DTReplay";
             try
             {
-                using (var stream = File.Create($"{ReplayFolder}\\Replay ({DateTime.Now:HH-mm dd-MM-yyyy}).DTReplay"))
-                    jsonSerializer.WriteObject(stream, Recording);
+                using (var stream = File.Create(f))
+                {
+                    var b = Encoding.UTF8.GetBytes(CurrentSerializer + "\n");
+                    stream.Write(b,0,b.Length);
+                    JsonSerializers[CurrentSerializer].WriteObject(stream, Recording);
+                }
             } catch (Exception e)
             {
                 Debug.LogError(e);
+                try
+                {
+                    if (File.Exists(f))
+                        File.Delete(f);
+                } catch { }
                 GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "An error occured while saving the replay file", null, "");
             }
             Recording = null;
@@ -77,7 +98,20 @@ namespace BattleReplay
             try
             {
                 using (var stream = File.OpenRead(file))
-                    Replaying = jsonSerializer.ReadObject(stream) as GameRecording;
+                {
+                    var serializer = "v0";
+                    int b = stream.ReadByte();
+                    stream.Seek(0, SeekOrigin.Begin);
+                    if (b == Encoding.UTF8.GetBytes("v")[0])
+                    {
+                        var end = Encoding.UTF8.GetBytes("\n")[0];
+                        var reading = new List<byte>();
+                        while ((b = stream.ReadByte()) != -1 && b != end)
+                            reading.Add((byte)b);
+                        serializer = Encoding.UTF8.GetString(reading.ToArray());
+                    }
+                    Replaying = JsonSerializers[serializer].ReadObject(stream) as GameRecording;
+                }
             } catch (Exception e)
             {
                 Replaying = null;
